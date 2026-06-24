@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  pppoe-config-worker:
+    image: marcandres888/pppoe-config-worker:latest
+    container_name: pppoe-config-worker
+    restart: unless-stopped
+    environment:
+      # Kafka Configuration
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - KAFKA_INPUT_TOPIC=genieacs_boot
+      - KAFKA_SUCCESS_TOPIC=pppoe_registered
+      - KAFKA_ERROR_TOPIC=onu_no_pppoe
+      - KAFKA_CONSUMER_GROUP=pppoe-config-worker
+      
+      # API Configuration
+      - API_BASE_URL=http://10.42.29.80:8000
+      
+      # GenieACS Configuration
+      - GENIEACS_HOST=10.42.4.3
+      - GENIEACS_USER=onu
+      - GENIEACS_PASSWORD=onu
+      - GENIEACS_SSL=false
+      
+      # Gotify Configuration
+      - GOTIFY_URL=https://gotify.mcandres.com
+      - GOTIFY_TOKEN=AfvvshNxqj6wk59
+      
+      # TR-069 Paths
+      - PPPOE_USERNAME_PATH=InternetGatewayDevice.WANDevice.1.WANConnectionDevice.2.WANPPPConnection.1.Username
+      - PPPOE_PASSWORD_PATH=InternetGatewayDevice.WANDevice.1.WANConnectionDevice.2.WANPPPConnection.1.Password
+      
+      # Logging
+      - LOG_LEVEL=INFO
+    
+    networks:
+      - portainer_default
+    
+   
+    
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  portainer_default:
+    external: true
